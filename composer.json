@@ -1,0 +1,14 @@
+{
+    "name": "eltharin/juniorjs",
+    "autoload": {
+        "psr-4": {
+            "Eltharin\\JuniorJSBundle\\": "src/"
+        }
+    },    
+	"description": "JuniorJS Bundle for symfony",
+    "keywords": ["Symfony", "JS", "Web", "Bundle"],
+    "license": "GPL-3.0",
+	"type": "symfony-bundle",
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
