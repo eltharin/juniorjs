@@ -1,5 +1,5 @@
 JR.events = class{
-    static add (elementSelector, eventName, handler)
+    static add (eventName, elementSelector, handler)
     {
         document.addEventListener(eventName, function(e) {
             for (var target = e.target; target && target != this; target = target.parentNode) {
@@ -12,7 +12,7 @@ JR.events = class{
         }, false);
     }
 
-    static dispatch(element, eventName, options = {})
+    static dispatch(eventName, element, options = {})
     {
         if(typeof element != 'object')
         {
