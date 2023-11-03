@@ -19,10 +19,13 @@ JR.events = class{
             element = document.querySelector(element);
         }
 
-        let defaultOptions = {"bubbles":true, "cancelable":false, 'detail':{}};
-        options = {...defaultOptions,...options};
+        if(element != null)
+        {
+            let defaultOptions = {"bubbles":true, "cancelable":false, 'detail':{}};
+            options = {...defaultOptions,...options};
 
-        let event = new CustomEvent(eventName, options);
-        element.dispatchEvent(event);
+            let event = new CustomEvent(eventName, options);
+            element.dispatchEvent(event);
+        }
     }
 }
