@@ -1,0 +1,11 @@
+{% block messageContainer %}
+	<div class="messageContainer">
+		{% for type, messages in app.flashes() %}
+			{% for message in messages %}
+				<div class="messageflash {{ type }}">
+					{{ message }}
+				</div>
+			{% endfor %}
+		{% endfor %}
+	</div>
+{% endblock %}

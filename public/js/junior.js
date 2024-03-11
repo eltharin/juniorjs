@@ -62,12 +62,14 @@ class JR {
 
                     if(response.headers.get('X-Response-Type') == 'AjaxOrNotResponse')
                     {
-                        //if(Flashes)
-                        for (var msgType in data.msgs)
+                        if(typeof Flashes !== "undefined")
                         {
-                            data.msgs[msgType].forEach((msg) => {
-                                Flashes.create(msg, msgType);
-                            });
+                            for (var msgType in data.msgs)
+                            {
+                                data.msgs[msgType].forEach((msg) => {
+                                    Flashes.create(msg, msgType);
+                                });
+                            }
                         }
                         data = data.content;
                     }
