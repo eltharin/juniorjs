@@ -2,11 +2,25 @@ JR.events = class{
     static add (eventName, elementSelector, handler)
     {
         document.addEventListener(eventName, function(e) {
-            for (var target = e.target; target && target != this; target = target.parentNode) {
-                if (target.matches(elementSelector)) {
-                    e.eventTarget = target;
-                    handler.call(target, e);
-                    break;
+            for (var target = e.target; target && target != this; target = target.parentNode)
+            {
+                if(typeof elementSelector === 'string')
+                {
+                    if (target.matches(elementSelector))
+                    {
+                        e.eventTarget = target;
+                        handler.call(target, e);
+                        break;
+                    }
+                }
+                else
+                {
+                    if (Array.prototype.slice.call(elementSelector).includes(target))
+                    {
+                        e.eventTarget = target;
+                        handler.call(target, e);
+                        break;
+                    }
                 }
             }
         }, false);

@@ -1,7 +1,13 @@
 
 JR.events.add( 'click','.openpopup', (event) => {
     event.preventDefault();
-    JR.ajax(event.eventTarget.getAttribute('href'),{
+    JR.events.dispatch('onBeforeLoad', event.eventTarget);
+    let url = event.eventTarget.getAttribute('href') || event.eventTarget.getAttribute('url') || null;
+    if(url == null)
+    {
+        return;
+    }
+    JR.ajax(url,{
         'success' : (data,response) => {
             if(event.eventTarget.openpopup != null)
             {
