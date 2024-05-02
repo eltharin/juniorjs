@@ -98,4 +98,10 @@ class JR {
             })
         ;
     }
+
+    static loadData(element, data)
+    {
+        element.innerHTML = '';
+        element.append(document.createRange().createContextualFragment(data));
+    }
 }
