@@ -1,15 +1,51 @@
 Junior JS Library
 
 
-JSE Table
+```
+JR.ajax(url, options = {})
+```
 
-[![Latest Stable Version](http://poser.pugx.org/eltharin/juniorjs/v)](https://packagist.org/packages/eltharin/juniorjs)
-[![Total Downloads](http://poser.pugx.org/eltharin/juniorjs/downloads)](https://packagist.org/packages/eltharin/juniorjs)
-[![Latest Unstable Version](http://poser.pugx.org/eltharin/juniorjs/v/unstable)](https://packagist.org/packages/eltharin/juniorjs)
-[![License](http://poser.pugx.org/eltharin/juniorjs/license)](https://packagist.org/packages/eltharin/juniorjs)
-
-
+call an Ajax query
 
 Manage Events
 
+```
+JR.Events.add (eventName, elementSelector, handler)
+```
+
+allow add an event on an HTML element but placed on document root to allow dispatching event on newest elements
+
+```
+JR.Events.dispatch(eventName, element, options = {})
+```
+
+dispatch the event
+
+
+
 Manage Popup
+
+```
+let popup = new JR.Popup();
+popup.load(data);
+```
+
+create a popup
+
+
+set class openpopup on a link allow you to call differently a link,
+
+simple clic open a popup with the page emedded or with a middle clic that open you a new page
+
+you have to set your template with condition on 
+
+```
+{%- if app.request.headers.get('X-Requested-With') != 'XMLHttpRequest' -%}
+<!DOCTYPE html>
+<html>
+<head>
+...
+{%- endif -%}
+```
+
+take a look to my othr plugin Ajaxresponser allowing a route to be responded in ajaxmode (a json with message, errors, success, ...} or HTML page)
