@@ -13,6 +13,15 @@ JR.events = class{
                         break;
                     }
                 }
+                else if(typeof elementSelector === 'object' && elementSelector instanceof HTMLElement)
+                {
+                    if (target == elementSelector)
+                    {
+                        e.eventTarget = target;
+                        handler.call(target, e);
+                        break;
+                    }
+                }
                 else
                 {
                     if (Array.prototype.slice.call(elementSelector).includes(target))
