@@ -1,8 +1,8 @@
 JR.events = class{
-    static add (eventName, elementSelector, handler)
+    static add (eventName, elementSelector, handler, withParents = false)
     {
         document.addEventListener(eventName, function(e) {
-            for (var target = e.target; target && target != this; target = target.parentNode)
+            for (var target = e.target; target && withParents && target != this; target = target.parentNode)
             {
                 if(typeof elementSelector === 'string')
                 {
