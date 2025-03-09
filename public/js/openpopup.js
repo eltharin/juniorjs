@@ -37,7 +37,7 @@ JR.events.add( 'click','.openpopup', (event) => {
             JR.events.dispatch('onLoadError', event.eventTarget,{"detail": {data : data, response : response}});
         }
     });
-});
+}, true);
 
 
 JR.events.add( 'click','.openin', (event) => {
@@ -84,12 +84,31 @@ JR.events.add( 'click','.openin', (event) => {
      //       JR.events.dispatch('onLoadError', event.eventTarget,{"detail": {data : data, response : response}});
         }
     });
-});
+}, true);
 
 JR.events.add( 'click','.linkajax', (event) => {
+    if(event.defaultPrevented) {return ;}
     event.preventDefault();
 
+    if(event.eventTarget.dataset.update != '')
+    {
+        JR.events.add('onSubmitSuccess', event.eventTarget, function(e) {
+            document.querySelector(event.eventTarget.dataset.update).outerHTML = e.detail.data;
+        });
+    }
+
+    let headers = {'x-redirect-type': (event.eventTarget.dataset.redirectType) ?? 'forward'}
+    if(event.eventTarget.dataset.update != undefined)
+    {
+        headers['x-section'] = event.eventTarget.dataset.update;
+    }
+    if(event.eventTarget.dataset.redirectToMe != undefined && event.eventTarget.dataset.redirectToMe)
+    {
+        headers['x-redirect-to'] = window.location.href;
+    }
+
     JR.ajax(event.eventTarget.getAttribute('href'),{
+        'headers': headers,
         'success' : (data,response) => {
             JR.events.dispatch('onSubmitSuccess', event.eventTarget, {"detail": {data : data, response : response}} );
         },
@@ -97,24 +116,33 @@ JR.events.add( 'click','.linkajax', (event) => {
             JR.events.dispatch('onSubmitError', event.eventTarget, {"detail": {data : data, response : response}} );
         }
     });
+}, true);
+
+JR.events.add( 'submit', 'form.submitajax', (event) =>
+{
+    formSubmitInAjax(event);
 });
 
 JR.events.add( 'submit','.ajax_form form', (event) =>
 {
+    formSubmitInAjax(event, (form) => form.closest('.ajax_form'));
+});
+
+function formSubmitInAjax(event, containerGetter = null)
+{
+    if(event.defaultPrevented) {return ;}
     event.preventDefault();
 
-    /*if(CKEDITOR != undefined)
-    {
-        for ( instance in CKEDITOR.instances )
-        {
-            CKEDITOR.instances[instance].updateElement();
-        }
-    }*/
-
     let form = event.eventTarget;
-    let form_container = form.closest('.ajax_form');
-    let popup = form.closest('.popup');
-    let caller = form_container.caller ?? null;
+
+    let form_container = null;
+    let caller = form;
+
+    if(containerGetter != null)
+    {
+        form_container = containerGetter(form);
+        caller = form_container.caller ?? null;
+    }
 
     if(form.classList.contains('noAjaxSubmit') || (caller != null && caller.dataset.openpopupSubmit == "noAjax"))
     {
@@ -122,21 +150,39 @@ JR.events.add( 'submit','.ajax_form form', (event) =>
         return;
     }
 
-    JR.events.dispatch('beforeFormSubmit' , caller);
+    if(caller != null)
+    {
+        JR.events.dispatch('beforeFormSubmit' , caller);
+    }
 
     let formData = new FormData(form);
+    let headers = {'x-redirect-type': (caller != null && caller.dataset.redirectType) ?? 'forward'}
+
+    if(caller.dataset.update != undefined)
+    {
+        headers['x-section'] = caller.dataset.update;
+
+        JR.events.add('onFormSubmitSuccess', caller, function(e) {
+            document.querySelector(caller.dataset.update).outerHTML = e.detail.data;
+            JR.events.dispatch('onAjaxReload', document.querySelector(caller.dataset.update),{ "detail": {}});
+        });
+    }
+
+    if(caller.dataset.redirect_to_me != undefined && caller.dataset.redirect_to_me)
+    {
+        headers['x-redirect-to'] = window.location.href;
+    }
 
     JR.ajax(form.getAttribute('action'),{
         'method':  form.getAttribute('method'),
         'data': formData,
-        'headers': {'x-redirect-type': (caller != null && caller.dataset.redirectType) ?? 'forward'},
+        'headers': headers,
         'redirect': (caller != null && caller.dataset.redirectType) == 'manual' ? 'manual' : 'follow',
         'success': function (data,response) {
-            //popup.popup.close();
             JR.events.dispatch('onFormSubmitSuccess', caller, {"detail": {data : data, form: form, formData : formData, response : response, formContainer: form_container}});
         },
         'error': function (data,response) {
             JR.events.dispatch('onFormSubmitError', caller,{ "detail": {response : response}});
         }
     });
-});
+}
