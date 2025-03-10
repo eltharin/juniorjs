@@ -4,7 +4,6 @@ JR.events = class{
         document.addEventListener(eventName, function(e) {
             for (var target = e.target; target  && target != this; target = target.parentNode)
             {
-                console.log(eventName, target, elementSelector);
                 if(typeof elementSelector === 'string')
                 {
                     if (target.matches(elementSelector))

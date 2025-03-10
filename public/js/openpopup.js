@@ -164,7 +164,7 @@ function formSubmitInAjax(event, containerGetter = null)
 
         JR.events.add('onFormSubmitSuccess', caller, function(e) {
             document.querySelector(caller.dataset.update).outerHTML = e.detail.data;
-            JR.events.dispatch('onAjaxReload', document.querySelector(caller.dataset.update),{ "detail": {}});
+            JR.events.dispatch('onAjaxReload', document.querySelector(caller.dataset.update).closest('table'),{ "detail": {}});
         });
     }
 
