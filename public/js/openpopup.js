@@ -141,7 +141,7 @@ function formSubmitInAjax(event, containerGetter = null)
     if(containerGetter != null)
     {
         form_container = containerGetter(form);
-        caller = form_container.caller ?? null;
+        caller = form_container.caller ?? form_container;
     }
 
     if(form.classList.contains('noAjaxSubmit') || (caller != null && caller.dataset.openpopupSubmit == "noAjax"))
