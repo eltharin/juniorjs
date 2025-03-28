@@ -1,5 +1,6 @@
 
 JR.events.add( 'click','.openpopup', (event) => {
+    if(event.defaultPrevented) {return ;}
     event.preventDefault();
     JR.events.dispatch('onBeforeLoad', event.eventTarget);
     let url = event.eventTarget.getAttribute('href') || event.eventTarget.getAttribute('url') || event.eventTarget.dataset.url || null;
@@ -14,22 +15,34 @@ JR.events.add( 'click','.openpopup', (event) => {
                 event.eventTarget.openpopup.close();
             }
 
-            let popup = new JR.Popup();
-            popup.getPopup().classList.add('ajax_form')
-            popup.load(data);
+            let popup = null;
 
-            JR.events.add('onFormSubmitSuccess', event.eventTarget, (e) => {
-                popup.close();
-            });
+            if(event.eventTarget.classList.contains('samepopup') && event.eventTarget.closest('.popup'))
+            {
+                console.log(event.eventTarget.closest('.popup'))
+                popup = event.eventTarget.closest('.popup').popup;
+            }
+            else
+            {
+                popup  = new JR.Popup();
+                popup.getPopup().classList.add('ajax_form')
 
-            JR.events.add('onFormSubmitError', event.eventTarget, (e) => {//--@TODO:a tester
-                if(response.text.errorForm == true)
-                {
-                    popup.popup.load(data);
-                }
-            });
+                JR.events.add('onFormSubmitSuccess', event.eventTarget, (e) => {
+                    popup.close();
+                });
 
-            popup.getPopup().caller = event.eventTarget;
+                JR.events.add('onFormSubmitError', event.eventTarget, (e) => {//--@TODO:a tester
+                    if(response.text.errorForm == true)
+                    {
+                        popup.popup.load(data);
+                    }
+                });
+
+                popup.getPopup().caller = event.eventTarget;
+            }
+
+            popup.load(data, true);
+
             event.eventTarget.openpopup = popup;
             JR.events.dispatch('onLoadPopup', popup.getPopup(),{"detail": {data : data, response : response}});
         },
@@ -41,6 +54,7 @@ JR.events.add( 'click','.openpopup', (event) => {
 
 
 JR.events.add( 'click','.openin', (event) => {
+    if(event.defaultPrevented) {return ;}
     event.preventDefault();
     JR.events.dispatch('onBeforeLoad', event.eventTarget);
 

@@ -30,8 +30,15 @@ JR.Popup = class{
         return this.popup;
     }
 
-    load(html)
+    clear()
     {
+        this.content.replaceChildren()
+    }
+
+    load(html, clear = false)
+    {
+        if(clear) {this.clear();}
+
         this.content.append(document.createRange().createContextualFragment(html));
         this.popup.dispatchEvent(new Event("onLoadContent", {"bubbles":true, "cancelable":false}));
     }
