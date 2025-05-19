@@ -89,7 +89,12 @@ JR.events.add( 'click','.openin', (event) => {
 
              */
 
+
+
             elementDestination.innerHTML = data;
+            elementDestination.querySelectorAll('script').forEach((s) => {eval(s.innerText)});
+
+
             elementDestination.caller = event.eventTarget;
             JR.events.dispatch('onLoadData', event.eventTarget,{"detail": {data : data, response : response}});
 
@@ -196,6 +201,15 @@ function formSubmitInAjax(event, containerGetter = null)
             JR.events.dispatch('onFormSubmitSuccess', caller, {"detail": {data : data, form: form, formData : formData, response : response, formContainer: form_container}});
         },
         'error': function (data,response) {
+            const domreturn = document.createElement("div");
+            domreturn.innerHTML = data;
+            const formReloaded = domreturn.querySelector('form#' + form.id);
+            if(formReloaded !== null)
+            {
+                form.outerHTML = formReloaded.outerHTML;
+                JR.events.dispatch('onFormReloaded', 'form#' + form.id,{ "detail": { form: formReloaded}});
+            }
+
             JR.events.dispatch('onFormSubmitError', caller,{ "detail": {response : response}});
         }
     });
