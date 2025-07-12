@@ -203,6 +203,8 @@ function formSubmitInAjax(event, containerGetter = null)
         'error': function (data,response) {
             const domreturn = document.createElement("div");
             domreturn.innerHTML = data;
+
+            if(form.id == '') {form.id = 'formId'+Math.floor(Math.random()*65536)}
             const formReloaded = domreturn.querySelector('form#' + form.id);
             if(formReloaded !== null)
             {
