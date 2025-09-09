@@ -39,6 +39,11 @@ class JR {
 
         if(myInit.method != 'GET')
         {
+            if(typeof options.data == "object" && myInit.headers.get('Content-Type') == 'application/json')
+            {
+                options.data = JSON.stringify(options.data);
+            }
+
             myInit.body = options.data;
         }
 

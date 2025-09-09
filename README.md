@@ -49,3 +49,15 @@ you have to set your template with condition on
 ```
 
 take a look to my othr plugin Ajaxresponser allowing a route to be responded in ajaxmode (a json with message, errors, success, ...} or HTML page)
+
+
+
+allow load a link in ajax and load in a html element :
+
+<a href="<<mylink>>" class="openin" data-destination="#my_div">Text</a>
+
+
+
+allow load a link in ajax and load in a new popup :
+
+<a href="<<mylink>>" class="openpopup" >Text</a>

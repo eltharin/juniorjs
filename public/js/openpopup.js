@@ -74,35 +74,17 @@ JR.events.add( 'click','.openin', (event) => {
     let elementDestination = document.querySelector(destination);
 
 
-    JR.ajax(url,{
-        'success' : (data,response) => {
-            /*
-            JR.events.add('onFormSubmitSuccess', event.eventTarget, (e) => {
-                popup.close();
-            });
-            JR.events.add('onFormSubmitError', event.eventTarget, (e) => {//--@TODO:a tester
-                if(response.text.errorForm == true)
-                {
-                    popup.popup.load(data);
-                }
-            });
+    JR.events.add('onSubmitSuccess', event.eventTarget, function(e) {
 
-             */
+        elementDestination.innerHTML = e.detail.data;
+        elementDestination.querySelectorAll('script').forEach((s) => {eval(s.innerText)});
 
 
-
-            elementDestination.innerHTML = data;
-            elementDestination.querySelectorAll('script').forEach((s) => {eval(s.innerText)});
-
-
-            elementDestination.caller = event.eventTarget;
-            JR.events.dispatch('onLoadData', event.eventTarget,{"detail": {data : data, response : response}});
-
-        },
-        'error' : (data, response) => {
-     //       JR.events.dispatch('onLoadError', event.eventTarget,{"detail": {data : data, response : response}});
-        }
+        elementDestination.caller = event.eventTarget;
+        JR.events.dispatch('onLoadData', event.eventTarget,{"detail": {data : data, response : response}});
     });
+
+    queryAjax(event.eventTarget);
 }, true);
 
 JR.events.add( 'click','.linkajax', (event) => {
@@ -116,7 +98,8 @@ JR.events.add( 'click','.linkajax', (event) => {
         });
     }
 
-    let headers = {'x-redirect-type': (event.eventTarget.dataset.redirectType) ?? 'forward'}
+    queryAjax(event.eventTarget);
+    /*let headers = {'x-redirect-type': (event.eventTarget.dataset.redirectType) ?? 'forward'}
     if(event.eventTarget.dataset.update != undefined)
     {
         headers['x-section'] = event.eventTarget.dataset.update;
@@ -134,8 +117,31 @@ JR.events.add( 'click','.linkajax', (event) => {
         'error' : (data , response) => {
             JR.events.dispatch('onSubmitError', event.eventTarget, {"detail": {data : data, response : response}} );
         }
-    });
+    });*/
 }, true);
+
+function queryAjax(target)
+{
+    let headers = {'x-redirect-type': (target.dataset.redirectType) ?? 'forward'}
+    if(target.dataset.update != undefined)
+    {
+        headers['x-section'] = target.dataset.update;
+    }
+    if(target.dataset.redirectToMe != undefined && target.dataset.redirectToMe)
+    {
+        headers['x-redirect-to'] = window.location.href;
+    }
+
+    JR.ajax(target.getAttribute('href'),{
+        'headers': headers,
+        'success' : (data,response) => {
+            JR.events.dispatch('onSubmitSuccess', target, {"detail": {data : data, response : response}} );
+        },
+        'error' : (data , response) => {
+            JR.events.dispatch('onSubmitError', target, {"detail": {data : data, response : response}} );
+        }
+    });
+}
 
 JR.events.add( 'submit', 'form.submitajax', (event) =>
 {

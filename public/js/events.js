@@ -2,45 +2,49 @@ JR.events = class{
     static add (eventName, elementSelector, handler, withParents = false)
     {
         document.addEventListener(eventName, function(e) {
-            for (var target = e.target; target  && target != this; target = target.parentNode)
-            {
-                if(typeof elementSelector === 'string')
-                {
-                    if (target.matches(elementSelector))
-                    {
-                        e.eventTarget = target;
-                        handler.call(target, e);
-                        break;
-                    }
-                }
-                else if(typeof elementSelector === 'object' && elementSelector instanceof HTMLElement)
-                {
-                    if (target == elementSelector)
-                    {
-                        e.eventTarget = target;
-                        handler.call(target, e);
-                        break;
-                    }
-                }
-                else
-                {
-                    if (Array.prototype.slice.call(elementSelector).includes(target))
-                    {
-                        e.eventTarget = target;
-                        handler.call(target, e);
-                        break;
-                    }
-                }
 
-                if(!withParents)
-                {
-                    break;
-                }
+            let target = e.target;
+
+            if(withParents)
+            {
+                target = e.target.closest(elementSelector);
+            }
+            if(target !== null && JR.events.targetmatch(target, elementSelector))
+            {
+                e.eventTarget = target;
+                handler.call(target, e);
             }
         }, false);
     }
 
-    static dispatch(eventName, element, options = {})
+    static targetmatch(target, elementSelector)
+    {
+        if(typeof elementSelector === 'string')
+        {
+            if (target.matches(elementSelector))
+            {
+                return true;
+            }
+        }
+        else if(typeof elementSelector === 'object' && elementSelector instanceof HTMLElement)
+        {
+            if (target == elementSelector)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (Array.prototype.slice.call(elementSelector).includes(target))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static dispatch(event, element, options = {})
     {
         if(typeof element != 'object')
         {
@@ -49,10 +53,14 @@ JR.events = class{
 
         if(element != null)
         {
-            let defaultOptions = {"bubbles":true, "cancelable":false, 'detail':{}};
-            options = {...defaultOptions,...options};
+            if(typeof event == "string")
+            {
+                let defaultOptions = {"bubbles":true, "cancelable":false, 'detail':{}};
+                options = {...defaultOptions,...options};
 
-            let event = new CustomEvent(eventName, options);
+                event = new CustomEvent(event, options);
+            }
+
             element.dispatchEvent(event);
         }
     }
